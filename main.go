@@ -7,9 +7,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/mitchellh/go-homedir"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 )
 
@@ -17,7 +19,9 @@ var (
 	author   = flag.String("author", "gitomatic", "author name for git commits")
 	email    = flag.String("email", "gitomatic@fribbledom.com", "email address for git commits")
 	interval = flag.String("interval", "1m", "how often to check for changes")
-	privkey  = flag.String("privkey", "", "location of private key used for auth")
+	privkey  = flag.String("privkey", "~/.ssh/id_rsa", "location of private key used for auth")
+	username = flag.String("username", "", "username used for auth")
+	password = flag.String("password", "", "password used for auth")
 )
 
 func gitAdd(w *git.Worktree, path string) error {
@@ -81,6 +85,22 @@ func gitHasRemote(r *git.Repository) bool {
 	return len(remotes) > 0
 }
 
+func parseAuthArgs() (transport.AuthMethod, error) {
+	if len(*username) > 0 {
+		return &http.BasicAuth{
+			Username: *username,
+			Password: *password,
+		}, nil
+	}
+
+	*privkey, _ = homedir.Expand(*privkey)
+	auth, err := ssh.NewPublicKeysFromFile("git", *privkey, "")
+	if err != nil {
+		return nil, err
+	}
+	return auth, nil
+}
+
 func main() {
 	fmt.Println("git-o-matic")
 	flag.Parse()
@@ -94,14 +114,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	var auth transport.AuthMethod
-	if len(*privkey) > 0 {
-		var err error
-		auth, err = ssh.NewPublicKeysFromFile("git", *privkey, "")
-		if err != nil {
-			panic(err)
-		}
+	auth, err := parseAuthArgs()
+	if err != nil {
+		panic(err)
 	}
 
 	path := flag.Args()[0]

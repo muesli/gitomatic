@@ -22,11 +22,17 @@ Monitor a repository for changes and automatically pull & push changes:
 gitomatic <path>
 ```
 
-Available parameters:
+Auth methods:
+
+```
+gitomatic -privkey ~/.ssh/id_rsa
+gitomatic -username "someone" -password "mypass"
+```
+
+Other parameters:
 
 ```
 gitomatic -interval 30m
-gitomatic -privkey ~/.ssh/id_rsa
 gitomatic -author "John Doe"
 gitomatic -email "some@mail.tld"
 ```
