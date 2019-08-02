@@ -13,3 +13,6 @@
 
 # Binaries
 gitomatic
+
+# Dist
+/dist/
