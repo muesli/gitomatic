@@ -5,10 +5,16 @@ A tool to monitor a git repository and automatically pull & push changes
 
 ## Installation
 
+### Packages & Binaries
+
+- [Binaries](https://github.com/muesli/gitomatic/releases) for Linux, macOS & Windows
+
+### From Source
+
 Make sure you have a working Go environment (Go 1.11 or higher is required).
 See the [install instructions](http://golang.org/doc/install.html).
 
-To install gitomatic, simply run:
+Compiling gitomatic is easy, simply run:
 
     git clone https://github.com/muesli/gitomatic.git
     cd gitomatic
