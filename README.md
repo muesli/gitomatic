@@ -10,7 +10,9 @@ See the [install instructions](http://golang.org/doc/install.html).
 
 To install gitomatic, simply run:
 
-    go get github.com/muesli/gitomatic
+    git clone https://github.com/muesli/gitomatic.git
+    cd gitomatic
+    go build
 
 ## Usage
 
