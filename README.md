@@ -1,7 +1,7 @@
 git-o-matic
 ===========
 
-A tool to monitor a git repository and automatically pull & push changes
+A tool to monitor git repositories and automatically pull & push changes
 
 ## Installation
 
