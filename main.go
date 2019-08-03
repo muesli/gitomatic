@@ -152,7 +152,7 @@ func main() {
 					panic(err)
 				}
 
-				msg += fmt.Sprintf("Added %s.\n", path)
+				msg += fmt.Sprintf("Add %s.\n", path)
 				changes++
 
 			case git.Modified:
@@ -162,7 +162,7 @@ func main() {
 					panic(err)
 				}
 
-				msg += fmt.Sprintf("Updated %s.\n", path)
+				msg += fmt.Sprintf("Update %s.\n", path)
 				changes++
 
 			case git.Deleted:
@@ -172,7 +172,7 @@ func main() {
 					panic(err)
 				}
 
-				msg += fmt.Sprintf("Removed %s.\n", path)
+				msg += fmt.Sprintf("Remove %s.\n", path)
 				changes++
 			}
 		}
