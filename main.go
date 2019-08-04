@@ -24,6 +24,11 @@ var (
 	password = flag.String("password", "", "password used for auth")
 )
 
+func fatal(format string, a ...interface{}) {
+	fmt.Printf(format, a...)
+	os.Exit(1)
+}
+
 func gitAdd(w *git.Worktree, path string) error {
 	log.Printf("Adding file to work-tree: %s\n", path)
 	_, err := w.Add(path)
@@ -112,32 +117,32 @@ func main() {
 
 	timeout, err := time.ParseDuration(*interval)
 	if err != nil {
-		panic(err)
+		fatal("cannot parse interval: %s\n", err)
 	}
 	auth, err := parseAuthArgs()
 	if err != nil {
-		panic(err)
+		fatal("cannot parse key: %s\n", err)
 	}
 
 	path := flag.Args()[0]
 	r, err := git.PlainOpen(path)
 	if err != nil {
-		panic(err)
+		fatal("cannot open repository: %s\n", err)
 	}
 	w, err := r.Worktree()
 	if err != nil {
-		panic(err)
+		fatal("cannot access repository: %s\n", err)
 	}
 
 	for {
 		log.Println("Checking repository:", path)
 		err = gitPull(r, w, auth)
 		if err != nil {
-			panic(err)
+			fatal("cannot pull from repository: %s\n", err)
 		}
 		status, err := w.Status()
 		if err != nil {
-			panic(err)
+			fatal("cannot retrieve git status: %s\n", err)
 		}
 
 		changes := 0
@@ -149,7 +154,7 @@ func main() {
 				log.Printf("New file detected: %s\n", path)
 				err := gitAdd(w, path)
 				if err != nil {
-					panic(err)
+					fatal("cannot add file: %s\n", err)
 				}
 
 				msg += fmt.Sprintf("Add %s.\n", path)
@@ -159,7 +164,7 @@ func main() {
 				log.Printf("Modified file detected: %s\n", path)
 				err := gitAdd(w, path)
 				if err != nil {
-					panic(err)
+					fatal("cannot add file: %s\n", err)
 				}
 
 				msg += fmt.Sprintf("Update %s.\n", path)
@@ -169,7 +174,7 @@ func main() {
 				log.Printf("Deleted file detected: %s\n", path)
 				err := gitRemove(w, path)
 				if err != nil {
-					panic(err)
+					fatal("cannot remove file: %s\n", err)
 				}
 
 				msg += fmt.Sprintf("Remove %s.\n", path)
@@ -182,11 +187,11 @@ func main() {
 		} else {
 			err = gitCommit(w, msg)
 			if err != nil {
-				panic(err)
+				fatal("cannot commit: %s\n", err)
 			}
 			err = gitPush(r, auth)
 			if err != nil {
-				panic(err)
+				fatal("cannot push: %s\n", err)
 			}
 		}
 
