@@ -7,6 +7,7 @@ A tool to monitor git repositories and automatically pull & push changes
 
 ### Packages & Binaries
 
+- Arch Linux: [gitomatic](https://aur.archlinux.org/packages/gitomatic/)
 - [Binaries](https://github.com/muesli/gitomatic/releases) for Linux, macOS & Windows
 
 ### From Source
