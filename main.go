@@ -148,7 +148,6 @@ func main() {
 		changes := 0
 		msg := ""
 		for path, s := range status {
-			log.Printf("%s %s %s\n", string(s.Worktree), string(s.Staging), path)
 			switch s.Worktree {
 			case git.Untracked:
 				log.Printf("New file detected: %s\n", path)
@@ -179,6 +178,9 @@ func main() {
 
 				msg += fmt.Sprintf("Remove %s.\n", path)
 				changes++
+
+			default:
+				log.Printf("%s %s %s\n", string(s.Worktree), string(s.Staging), path)
 			}
 		}
 
