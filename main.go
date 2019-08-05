@@ -125,21 +125,23 @@ func main() {
 	}
 
 	path := flag.Args()[0]
-	r, err := git.PlainOpen(path)
-	if err != nil {
-		fatal("cannot open repository: %s\n", err)
-	}
-	w, err := r.Worktree()
-	if err != nil {
-		fatal("cannot access repository: %s\n", err)
-	}
 
 	for {
 		log.Println("Checking repository:", path)
+		r, err := git.PlainOpen(path)
+		if err != nil {
+			fatal("cannot open repository: %s\n", err)
+		}
+		w, err := r.Worktree()
+		if err != nil {
+			fatal("cannot access repository: %s\n", err)
+		}
+
 		err = gitPull(r, w, auth)
 		if err != nil {
 			fatal("cannot pull from repository: %s\n", err)
 		}
+
 		status, err := w.Status()
 		if err != nil {
 			fatal("cannot retrieve git status: %s\n", err)
