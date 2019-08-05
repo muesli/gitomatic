@@ -46,14 +46,14 @@ gitomatic <path>
 Auth methods:
 
 ```
-gitomatic -privkey ~/.ssh/id_rsa
-gitomatic -username "someone" -password "mypass"
+gitomatic -privkey ~/.ssh/id_rsa <path>
+gitomatic -username "someone" -password "mypass" <path>
 ```
 
 Other parameters:
 
 ```
-gitomatic -interval 30m
-gitomatic -author "John Doe"
-gitomatic -email "some@mail.tld"
+gitomatic -interval 30m <path>
+gitomatic -author "John Doe" <path>
+gitomatic -email "some@mail.tld" <path>
 ```
