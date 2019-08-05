@@ -50,10 +50,20 @@ gitomatic -privkey ~/.ssh/id_rsa <path>
 gitomatic -username "someone" -password "mypass" <path>
 ```
 
-Other parameters:
+If you want to pull new changes but don't create commits (or vice versa):
+
+```
+gitomatic -pull=true -push=false <path>
+```
+
+You can control how often gitomatic checks for changes:
 
 ```
 gitomatic -interval 30m <path>
-gitomatic -author "John Doe" <path>
-gitomatic -email "some@mail.tld" <path>
+```
+
+Change the commit author's name and email:
+
+```
+gitomatic -author "John Doe" -email "some@mail.tld" <path>
 ```

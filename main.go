@@ -16,6 +16,8 @@ import (
 )
 
 var (
+	pull     = flag.Bool("pull", true, "automatically pull changes")
+	push     = flag.Bool("push", true, "automatically push changes")
 	author   = flag.String("author", "gitomatic", "author name for git commits")
 	email    = flag.String("email", "gitomatic@fribbledom.com", "email address for git commits")
 	interval = flag.String("interval", "1m", "how often to check for changes")
@@ -137,65 +139,69 @@ func main() {
 			fatal("cannot access repository: %s\n", err)
 		}
 
-		err = gitPull(r, w, auth)
-		if err != nil {
-			fatal("cannot pull from repository: %s\n", err)
-		}
-
-		status, err := w.Status()
-		if err != nil {
-			fatal("cannot retrieve git status: %s\n", err)
-		}
-
-		changes := 0
-		msg := ""
-		for path, s := range status {
-			switch s.Worktree {
-			case git.Untracked:
-				log.Printf("New file detected: %s\n", path)
-				err := gitAdd(w, path)
-				if err != nil {
-					fatal("cannot add file: %s\n", err)
-				}
-
-				msg += fmt.Sprintf("Add %s.\n", path)
-				changes++
-
-			case git.Modified:
-				log.Printf("Modified file detected: %s\n", path)
-				err := gitAdd(w, path)
-				if err != nil {
-					fatal("cannot add file: %s\n", err)
-				}
-
-				msg += fmt.Sprintf("Update %s.\n", path)
-				changes++
-
-			case git.Deleted:
-				log.Printf("Deleted file detected: %s\n", path)
-				err := gitRemove(w, path)
-				if err != nil {
-					fatal("cannot remove file: %s\n", err)
-				}
-
-				msg += fmt.Sprintf("Remove %s.\n", path)
-				changes++
-
-			default:
-				log.Printf("%s %s %s\n", string(s.Worktree), string(s.Staging), path)
+		if *pull {
+			err = gitPull(r, w, auth)
+			if err != nil {
+				fatal("cannot pull from repository: %s\n", err)
 			}
 		}
 
-		if changes == 0 {
-			log.Println("No changes detected.")
-		} else {
-			err = gitCommit(w, msg)
+		if *push {
+			status, err := w.Status()
 			if err != nil {
-				fatal("cannot commit: %s\n", err)
+				fatal("cannot retrieve git status: %s\n", err)
 			}
-			err = gitPush(r, auth)
-			if err != nil {
-				fatal("cannot push: %s\n", err)
+
+			changes := 0
+			msg := ""
+			for path, s := range status {
+				switch s.Worktree {
+				case git.Untracked:
+					log.Printf("New file detected: %s\n", path)
+					err := gitAdd(w, path)
+					if err != nil {
+						fatal("cannot add file: %s\n", err)
+					}
+
+					msg += fmt.Sprintf("Add %s.\n", path)
+					changes++
+
+				case git.Modified:
+					log.Printf("Modified file detected: %s\n", path)
+					err := gitAdd(w, path)
+					if err != nil {
+						fatal("cannot add file: %s\n", err)
+					}
+
+					msg += fmt.Sprintf("Update %s.\n", path)
+					changes++
+
+				case git.Deleted:
+					log.Printf("Deleted file detected: %s\n", path)
+					err := gitRemove(w, path)
+					if err != nil {
+						fatal("cannot remove file: %s\n", err)
+					}
+
+					msg += fmt.Sprintf("Remove %s.\n", path)
+					changes++
+
+				default:
+					log.Printf("%s %s %s\n", string(s.Worktree), string(s.Staging), path)
+				}
+			}
+
+			if changes == 0 {
+				log.Println("No changes detected.")
+			} else {
+				err = gitCommit(w, msg)
+				if err != nil {
+					fatal("cannot commit: %s\n", err)
+				}
+				err = gitPush(r, auth)
+				if err != nil {
+					fatal("cannot push: %s\n", err)
+				}
 			}
 		}
 
